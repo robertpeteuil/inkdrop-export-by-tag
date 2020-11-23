@@ -1,0 +1,57 @@
+{
+  "menu": [
+    {
+      "label": "File",
+      "submenu": [
+        {
+          "label": "Export",
+          "submenu": [
+            {
+              "label": "Express Tagged Notes as Markdown",
+              "command": "export-by-tag:express"
+            },
+            {
+              "label": "Express Tagged Notes as HTML",
+              "command": "export-by-tag:expressHtml"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+    "context-menu": {
+      ".sidebar-menu .sidebar-menu-tag-list-item": [
+         {"type": "separator"},
+         {
+           "label": "Export notes with tag as Markdown",
+           "command": "export-by-tag:context"
+         },
+         {
+           "label": "Export notes with tag as HTML",
+           "command": "export-by-tag:contextHtml"
+         }
+      ],
+      ".note-list-bar-item .note-list-item-view .tag-label": [
+         {"type": "separator"},
+         {
+           "label": "Export notes with tag as Markdown",
+           "command": "export-by-tag:context"
+         },
+         {
+           "label": "Export notes with tag as HTML",
+           "command": "export-by-tag:contextHtml"
+         }
+      ],
+      ".note-tags-bar .note-tags-bar-item": [
+         {"type": "separator"},
+         {
+           "label": "Export notes with tag as Markdown",
+           "command": "export-by-tag:context"
+         },
+         {
+           "label": "Export notes with tag as HTML",
+           "command": "export-by-tag:contextHtml"
+         }
+      ]
+  }
+}
