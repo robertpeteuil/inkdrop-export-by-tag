@@ -1,8 +1,10 @@
-# Inkdrop Plugin - Export Notes by Tag
+# Inkdrop Plugin - Export by Tag
 
 This plugin allows exporting all notes with specified a tag in Markdown or HTML format.
 
-The plugin can be used ad-hoc by right-clicking on a Tag, choosing the export option in the context menu and selecting the download destination.  It also allows pre-defining the Tag and download destination, which allows it to run without user interaction.  It includes a number of optional settings to enable its use in varied workflows.
+It doesn't require pre-configuration and is used by right-clicking on a Tag, selecting an export type from the pop-up context menu (Markdown or HTML) and choosing a download destination.
+
+Config options provide additional control over how the files are exported.
 
 ## Install
 
@@ -12,19 +14,9 @@ ipm install export-by-tag
 
 ## Usage
 
-The plugin can be used in different modes, which provide alternate methods of triggering
+Right-clicking on a Tag to trigger an export is supported in the tag-list in sidebar, the message list in the middle, and the title area of a note in the editor.
 
-- right-clicking on a tag and selecting one of the new options from the context-menu runs the plugin in Context Mode.
-  - no configuration required
-  - requires selecting download destination on each run
-
-- triggered via keystroke sequence or Export Menu (Express Mode)
-  - requires setting "export tag" and "export location" in plugin settings
-  - no interaction required after triggering
-
-Usage in Context Mode doesn't require any configuration and allows you to choose an export location for each export. Config options provide additional control over exported files.
-
-Usage in Express Mode doesn't require and user interaction, but requires setting
+and selecting one of the options from the context-menu
 
 ## Modes
 
@@ -55,38 +47,6 @@ This brings up a dialog to select the export location, and then exports Notes wi
     - keep creation date
     - use express export folder
       - no prompts
-- express mode - via menu or hot-key
-  - pre-defined export tag (reqd)
-  - export folder (reqd)
-    - defaults to user home
-  - other options
-    - options listed above
-      - hierarchy & keep creation date
-    - book to ignore
-      - useful to ignore templates
-    - custom file extension for markdown
-      - simplifies identification of files
-    - remove tag after complete
-      - workflow to only export once
-
-Includes many options for adjusting workflow: ignoring notebooks, exporting into folders that match the notebook hierarchy, setting file creation date to note date, removing tag after export and more.
-
-
-
-Before attempting to export, make sure to set the Export Tag in the Plugin Preferences.
-
-The export can be triggered by calling the command `export-by-tag:trigger`.
-
-## Configure Shortcut
-
-Add a shortcut for the plugin by editing [keymap.cson](https://docs.inkdrop.app/manual/customizing-keybindings) and mapping keys to the command `export-by-tag:trigger`.
-
-Example binding:
-
-```cson
-'body':
-  'cmd-ctrl-alt-e': 'export-by-tag:trigger'
-```
 
 ## Changelog
 

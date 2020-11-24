@@ -1,19 +1,14 @@
 {
   "name": "export-by-tag",
-  "version": "0.3.0",
+  "version": "0.1.0",
   "description": "Export Inkdrop Notes by Tag",
-  "repository": "https://github.com/robertpeteuil/inkdrop-test",
+  "repository": "https://github.com/robertpeteuil/inkdrop-export-by-tag",
   "license": "MIT",
   "main": "./src/index",
   "dependencies": {
     "inkdrop-export-utils": "^3.2.2",
     "sanitize-filename": "^1.6.3",
     "touch": "^3.1.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.11.6",
-    "@babel/preset-env": "^7.11.5",
-    "@babel/preset-react": "^7.10.4"
   },
   "engines": {
     "inkdrop": "^5.x"

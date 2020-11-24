@@ -58,50 +58,18 @@ async function getNotes(notes, tagId) {
   return taggedNotes['docs'];
 }
 
-async function getIgnoreBookId(books, ignoreBook) {
-  try {
-    const bookMeta = await books.findWithName(ignoreBook);
-    return bookMeta._id;
-  } catch (err) {
-    notify('Warning', `Warning: Not ignoring book '${ignoreBook}'`, 'Set in config but not found.');
-    return '';
-  }
-}
-
-async function extractTag(tagList, tagId) {
-  // var i = 0;
-  // while (i < tagList.length) {
-  for (var i = 0; i < tagList.length; i++) {
-    if (tagList[i] === tagId) {
-      tagList.splice(i, 1);
-      i--;
-    // } else {
-    //   ++i;
-    }
-  }
-  return tagList;
-}
-
-export async function exportTaggedNotes(htmlMode, tagClicked) {
+export async function exportTaggedNotes(htmlMode, tagName) {
 
   const pConfig = inkdrop.config.get('export-by-tag');
 
-  if (!tagClicked && !pConfig.exportTag) {
-    notify('Error', 'Cannot export Notes with Preset Tag', 'Preset Tag not configured', true);
-  }
-
   pConfig.mode = (htmlMode) ? "html" : "md"
-  pConfig.express = (tagClicked) ? false : true
-  const tagName = (tagClicked) ? tagClicked : pConfig.exportTag
 
   const db = await inkdrop.main.dataStore.getLocalDB();
   const tagId = await getTag(db, tagName);
-  const ignoreBookId = (pConfig.ignoreBook && pConfig.express) ? await getIgnoreBookId(db.books, pConfig.ignoreBook) : ''
   var noteList = await getNotes(db.notes, tagId);
 
-  // set base path based on mode and config settings
-  if (pConfig.express || pConfig.useExPath) {
-    pConfig.exportPath = path.join(os.homedir(), pConfig.expressPath);
+  if (pConfig.exportDir) {
+    pConfig.exportPath = path.join(os.homedir(), pConfig.exportDir);
   } else {
     const { filePaths: pathArrayToSave } = await dialog.showOpenDialog({
       title: `Select a directory to export notes with tag "${tagName}"`,
@@ -112,9 +80,7 @@ export async function exportTaggedNotes(htmlMode, tagClicked) {
     }
   }
 
-  var s = 0;
   for (var i = 0; i < noteList.length; i++) {
-    if (noteList[i].bookId != ignoreBookId) {
 
       var notePath = '';
       if (pConfig.dirStruct) {
@@ -124,24 +90,17 @@ export async function exportTaggedNotes(htmlMode, tagClicked) {
       }
 
       await exportNote(noteList[i], notePath, pConfig);
-
-      if (pConfig.removeTag && pConfig.express) {
-        await updateNoteTags(noteList[i], db.notes, tagId);
-      }
-    } else {
-      ++s;
-    }
+ 
   }
-  var exported = i - s;
-  const messPre = (pConfig.express) ? "Express Export" : "Exported Note"
-  if (exported == 1) {
-    notify('Info', `${messPre} with tag:${tagName}`, `${exported} Note exported`);
-  } else if (exported > 1) {
-    notify('Info', `${messPre}s with tag:${tagName}`, `${exported} Notes exported`);
+  
+  if (i == 1) {
+    notify('Info', `Exported Note with tag:${tagName}`, `${i} Note exported to ${pConfig.exportPath}`);
+  } else if (i > 1) {
+    notify('Info', `Exported Notes with tag:${tagName}`, `${i} Notes exported to ${pConfig.exportPath}`);
   } else {
-    notify('Warning', 'No Notes Exported', `All notes with tag:${tagName} in ignored folder`);
+    notify('Error', 'No Notes Exported', `Unknown Error`);
   }
-  return `${exported} Notes exported`;
+  return `${i} Notes exported to ${pConfig.exportPath}`;
 }
 
 async function createBookArray(bookId, bookObj, bookArray) {
@@ -166,12 +125,6 @@ async function exportNote(note, notePath, pConfig) {
     var fileBody;
 
     if (pConfig.mode == "md") {
-      if (pConfig.express && pConfig.fileExt) {
-        fileExt = pConfig.fileExt;
-        if (fileExt[0] === '.') {
-          fileExt = fileExt.substring(1);
-        }
-      }
       let body = note.body
       const uris = body.match(/inkdrop:\/\/file:[^) "']*/g) || []
       if (uris.length > 0) {
@@ -195,8 +148,10 @@ async function exportNote(note, notePath, pConfig) {
     } catch (err) {
       notify('Error', 'Error writing file', err.message, true);
     }
-    if (pConfig.setCreate) {
+    if (pConfig.dateType == "Create") {
       touch.sync(filePath, { time: new Date(note.createdAt) });
+    } else if (pConfig.dateType == "Update") {
+      touch.sync(filePath, { time: new Date(note.updatedAt) });
     }
   }
 }
@@ -208,18 +163,5 @@ async function checkDir(dirName) {
     } catch (err) {
       notify('Error', 'Error writing to dir', err.message, true);
     }
-  }
-}
-
-async function updateNoteTags(note, noteObj, tagId) {
-  const newTags = await extractTag(note.tags, tagId);
-  console.log(`New Tags: ${newTags}`);
-
-  note.tags = newTags;
-
-  try {
-    await noteObj.put(note);
-  } catch (err) {
-    notify('Error', 'Error updating tags on note', err.message);
   }
 }
