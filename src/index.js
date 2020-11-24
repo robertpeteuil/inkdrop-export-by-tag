@@ -24,7 +24,7 @@ module.exports = {
       title: "Date to Set on File, match 'Create' / 'Update' of Note or use 'Current'",
       description: "Date to set on exported file, current or match update/create of Note.", 
       type: 'string',
-      enum: ['Current', 'Create', 'Update'],
+      enum: ['Current', 'Create', 'Update', 'Both'],
       default: 'Current',
     },
     exportDir: {
