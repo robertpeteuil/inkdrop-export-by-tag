@@ -31,7 +31,6 @@ function notify(level, message, details, critialErr) {
 
 async function getTag(tags, tagName) {
   try {
-    // const tags = db.tags;
     const tagMeta = await tags.findWithName(tagName);
     return tagMeta._id;
   } catch (err) {
@@ -62,7 +61,6 @@ export async function exportTaggedNotes(htmlMode, tagName) {
 
   const pConfig = inkdrop.config.get('export-by-tag');
 
-  // pConfig.mode = (htmlMode) ? "html" : "md"
   pConfig.htmlMode = htmlMode
 
   const db = await inkdrop.main.dataStore.getLocalDB();
@@ -115,7 +113,6 @@ async function exportNote(note, notePath, pConfig) {
     const fileDir = path.join(pConfig.exportPath, notePath);
     await checkDir(fileDir);
 
-    // var fileExt = pConfig.mode;
     var fileExt;
     var fileBody;
 
@@ -136,27 +133,11 @@ async function exportNote(note, notePath, pConfig) {
       fileExt = "md"
     }
 
-    // if (pConfig.mode == "md") {
-    //   let body = note.body
-    //   const uris = body.match(/inkdrop:\/\/file:[^) "']*/g) || []
-    //   if (uris.length > 0) {
-    //     const picDir = path.join(fileDir, "pics")
-    //     await checkDir(picDir);
-    //     body = await replaceImages(body, picDir, fileDir)
-    //   }
-    //   fileBody = '# ' + note.title + '\n\n' + body;
-    // } else {
-    //   const tempBody = '# ' + note.title + '\n\n' + note.body;
-    //   const rawBody = await renderHTML(tempBody);
-    //   fileBody = await replaceHTMLImagesWithDataURI(rawBody);
-    // }
-
-    // console.log("about to start writing file")
-    // new method
+    // NEW METHOD
     const sanitizedTitle = sanitize(note.title, { replacement: '-' });
-    await writeToFile(sanitizedTitle, fileExt, fileDir, fileBody, pConfig.dateType, note);
+    await writeToFile(sanitizedTitle, fileExt, fileDir, fileBody, pConfig, note);
 
-    // original method
+    // ORIGINAL METHOD OF WRITING FILE
     // const sanitizedTitle = sanitize(note.title, { replacement: '-' });
     // var fileName = `${sanitizedTitle}.${fileExt}`;
     // var filePath = path.join(fileDir, fileName);
@@ -165,8 +146,7 @@ async function exportNote(note, notePath, pConfig) {
     // } catch (err) {
     //   notify('Error', 'Error writing file', err.message, true);
     // }
-
-    // Set optional create and modify date on file
+    // SET OPTIONAL CREATE AND MODIFY DATE ON FILE
     // if (pConfig.dateType == "Create") {
     //   touch.sync(filePath, { time: new Date(note.createdAt) });
     // } else if (pConfig.dateType == "Update") {
@@ -178,31 +158,33 @@ async function exportNote(note, notePath, pConfig) {
   }
 }
 
-async function writeToFile(fileTitle, fileExt, fileDir, fileBody, dateType, note) {
+async function writeToFile(fileTitle, fileExt, fileDir, fileBody, pConfig, note) {
   var fileName = `${fileTitle}.${fileExt}`;
   var filePath = path.join(fileDir, fileName);
 
   // flag "wx" = write without overwrite, "w" write okay to overwrite
   fs.writeFile(filePath, fileBody, { flag: "wx" }, function(err) {
     if (err) {
-      // console.log("file " + fileName + " already exists, testing next");
-      const datestr = new Date().toISOString().replace(/-/g, '').replace('.', '').replace(/:/g, '').replace('T','-').replace('Z','')
-      fileTitle = fileTitle + '-' + datestr;
-      writeToFile(fileTitle, fileExt, fileDir, fileBody, dateType, note);
+      // Error File already exists
+      // datestr includes ms, dateSh is shorter without ms
+      // const datestr = new Date().toISOString().replace(/-/g, '').replace('.', '').replace(/:/g, '').replace('T','-').replace('Z','')
+      // const dateSh = new Date().toISOString().replace(/(-|:)/g, '').replace(/T/, '-').replace(/\..+/, '')
+      const dateSh = new Date().toISOString().replace(/-|:/g, '').replace(/T/, '-').substr(0, 15)
+      fileTitle = fileTitle + '-' + dateSh;
+      writeToFile(fileTitle, fileExt, fileDir, fileBody, pConfig, note);
     }
     else {
-      // console.log("Successfully written " + fileTitle);
-      // Set optional create and modify date on file
-      if (dateType == "Create") {
+      // File Successfully Written
+      if (pConfig.dateType == "Create") {
         touch.sync(filePath, { time: new Date(note.createdAt) });
-      } else if (dateType == "Update") {
+      } else if (pConfig.dateType == "Update") {
         touch.sync(filePath, { time: new Date(note.updatedAt) });
-      } else if (dateType == "Both") {
+      } else if (pConfig.dateType == "Both") {
         fs.utimesSync(filePath, new Date(note.updatedAt), new Date(note.createdAt));
         touch.sync(filePath, { time: new Date(note.updatedAt) });
       }
     }
-});
+  });
 }
 
 async function checkDir(dirName) {
