@@ -34,8 +34,8 @@ module.exports = {
       default: false,
     },
     allowOverwrite: {
-      title: 'Allow exported files to overwrite existing files',
-      description: 'Overwrite existing files instead of appending date-time to end of name.',
+      title: 'Allow Overwrite of Existing Files by Exported Files',
+      description: 'Disable overwrite protection and allow files to replaced during export.',
       type: 'boolean',
       default: false,
     },
