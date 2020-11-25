@@ -134,56 +134,69 @@ async function exportNote(note, notePath, pConfig) {
       fileExt = "md";
     }
 
-    const sanitizedTitle = sanitize(note.title, { replacement: '-' });
-    await writeToFile(sanitizedTitle, fileExt, fileDir, fileBody, pConfig, note);
+    // SYNC METHOD
+    // const sanitizedTitle = sanitize(note.title, { replacement: '-' });
+    // await writeToFile(sanitizedTitle, fileExt, fileDir, fileBody, pConfig, note);
 
     // ORIGINAL METHOD OF WRITING FILE``
-    // const sanitizedTitle = sanitize(note.title, { replacement: '-' });
-    // var fileName = `${sanitizedTitle}.${fileExt}`;
-    // var filePath = path.join(fileDir, fileName);
-    // try {
-    //   fs.writeFileSync(filePath, fileBody);
-    // } catch (err) {
-    //   notify('Error', 'Error writing file', err.message, true);
-    // }
-    // SET OPTIONAL CREATE AND MODIFY DATE ON FILE
-    // if (pConfig.dateType == "Create") {
-    //   touch.sync(filePath, { time: new Date(note.createdAt) });
-    // } else if (pConfig.dateType == "Update") {
-    //   touch.sync(filePath, { time: new Date(note.updatedAt) });
-    // } else if (pConfig.dateType == "Both") {
-    //   fs.utimesSync(filePath, new Date(note.updatedAt), new Date(note.createdAt));
-    //   touch.sync(filePath, { time: new Date(note.updatedAt) });
-    // }
-  }
-}
+    const sanitizedTitle = sanitize(note.title, { replacement: '-' });
+    var fileName = `${sanitizedTitle}.${fileExt}`;
+    var filePath = path.join(fileDir, fileName);
+    const wFlag = (pConfig.allowOverwrite) ? "w" : "wx"
 
-async function writeToFile(fileTitle, fileExt, fileDir, fileBody, pConfig, note) {
-  var fileName = `${fileTitle}.${fileExt}`;
-  var filePath = path.join(fileDir, fileName);
-
-  const wFlag = (pConfig.allowOverwrite) ? "w" : "wx"
-  fs.writeFile(filePath, fileBody, { flag: wFlag }, function(err) {
-    if (err) {
+    try {
+      fs.writeFileSync(filePath, fileBody, { flag: wFlag });
+    } catch (err) {
       const dateSh = new Date().toISOString()
                                .replace(/-|:/g, '')
                                .replace(/T/, '-')
                                .substr(0, 15)
-      fileTitle = fileTitle + '-' + dateSh;
-      writeToFile(fileTitle, fileExt, fileDir, fileBody, pConfig, note);
-    }
-    else {
-      if (pConfig.dateType == "Create") {
-        touch.sync(filePath, { time: new Date(note.createdAt) });
-      } else if (pConfig.dateType == "Update") {
-        touch.sync(filePath, { time: new Date(note.updatedAt) });
-      } else if (pConfig.dateType == "Both") {
-        fs.utimesSync(filePath, new Date(note.updatedAt), new Date(note.createdAt));
-        touch.sync(filePath, { time: new Date(note.updatedAt) });
+      fileName = `${sanitizedTitle}-${dateSh}.${fileExt}`;
+      filePath = path.join(fileDir, fileName);
+      try {
+        fs.writeFileSync(filePath, fileBody, { flag: wFlag });
+      } catch (err) {
+        notify('Error', 'Error writing file', err.message, true);
       }
     }
-  });
+    // SET OPTIONAL CREATE AND MODIFY DATE ON FILE
+    if (pConfig.dateType == "Note Create") {
+      touch.sync(filePath, { time: new Date(note.createdAt) });
+    } else if (pConfig.dateType == "Note Modify") {
+      touch.sync(filePath, { time: new Date(note.updatedAt) });
+    } else if (pConfig.dateType == "Separate Values") {
+      fs.utimesSync(filePath, new Date(note.updatedAt), new Date(note.createdAt));
+      touch.sync(filePath, { time: new Date(note.updatedAt) });
+    }
+  }
 }
+
+// async function writeToFile(fileTitle, fileExt, fileDir, fileBody, pConfig, note) {
+//   var fileName = `${fileTitle}.${fileExt}`;
+//   var filePath = path.join(fileDir, fileName);
+
+//   const wFlag = (pConfig.allowOverwrite) ? "w" : "wx"
+//   fs.writeFile(filePath, fileBody, { flag: wFlag }, function(err) {
+//     if (err) {
+//       const dateSh = new Date().toISOString()
+//                                .replace(/-|:/g, '')
+//                                .replace(/T/, '-')
+//                                .substr(0, 15)
+//       fileTitle = fileTitle + '-' + dateSh;
+//       writeToFile(fileTitle, fileExt, fileDir, fileBody, pConfig, note);
+//     }
+//     else {
+//       if (pConfig.dateType == "Create") {
+//         touch.sync(filePath, { time: new Date(note.createdAt) });
+//       } else if (pConfig.dateType == "Update") {
+//         touch.sync(filePath, { time: new Date(note.updatedAt) });
+//       } else if (pConfig.dateType == "Matched") {
+//         fs.utimesSync(filePath, new Date(note.updatedAt), new Date(note.createdAt));
+//         touch.sync(filePath, { time: new Date(note.updatedAt) });
+//       }
+//     }
+//   });
+// }
 
 async function addTitleToMarkdown(md, title) {
   const match = md.match(/^---\n.*?---/ms);
@@ -192,7 +205,8 @@ async function addTitleToMarkdown(md, title) {
     const frontmatter = match[0];
     return `${frontmatter}\n# ${title}\n${md.substr(frontmatter.length)}`;
   } else {
-    return `# ${title}\n\n${md}`;
+    let body = (md.match(/^.*$/m)[0].length === 0) ? `\n${md}` : `\n\n${md}`
+    return `# ${title}${body}`;
   }
 }
 
