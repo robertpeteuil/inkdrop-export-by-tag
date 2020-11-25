@@ -1,10 +1,10 @@
 # Inkdrop Plugin - Export by Tag
 
-This plugin allows exporting all notes with specified a tag in Markdown or HTML format.
+This plugin exporting all notes with specified a tag in Markdown or HTML format.
 
-It doesn't require pre-configuration and is used by right-clicking on a Tag, selecting an export type from the pop-up context menu (Markdown or HTML) and choosing a download destination.
+Just right-click on a Tag, chose an export type in the pop-up and select a download destination.
 
-Config options provide additional control over how the files are exported.
+Config options provide the ability to streamline and configure settings for your workflow.
 
 ## Install
 
@@ -14,11 +14,15 @@ ipm install export-by-tag
 
 ## Usage
 
-Right-clicking on a Tag to trigger an export is supported in the tag-list in sidebar, the message list in the middle, and the title area of a note in the editor.
+1. Right-clicking on a Tag in the: tag-list in sidebar, note list in the middle, title block of editor
+2. Chose an export type in the pop-up menu
+   1. Export notes with tag as Markdown
+   2. Export notes with tag as HTML
+3. Select a download destination in the dialog
 
-and selecting one of the options from the context-menu
+## Options
 
-## Modes
+set default a default download directory, control file overwrites, set exports control over how the files are exported.
 
 This plugin runs in two different modes
 
@@ -27,13 +31,6 @@ This plugin runs in two different modes
   - requires selecting download destination on each run
   - optional settings, including pre-define export folder
   - useful for occasional exports
-- Express Mode: triggered via keystroke sequence or Export Menu
-  - requires setting "export tag" and "export location" in plugin settings
-  - many optional settings provide flexibility
-  - no interaction required after triggering
-  - useful for repetitive workflows
-
-- an "express-mode" which exports without dialog boxes by using a predefined "export tag" and "export location" in settings
 
 It enables right-clicking on a tag and selecting from the context menu, "Export as Markdown" and "Export as HTML".
 This brings up a dialog to select the export location, and then exports Notes with that tag in format chosen (markdown or HTML)). Right-clicking on tags can be performed in two locations: the tag list in the sidebar and the title block of the note in the editor pane.
