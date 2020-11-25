@@ -14,11 +14,11 @@ async function doExportContext(htmlMode, e) {
 
 module.exports = {
   config: {
-    dirStruct: {
-      title: 'Export Files to Folders matching Notebook Hierarchy',
-      description: 'Export files into folders/sub-folders that mirror notebook hierarchy.',
-      type: 'boolean',
-      default: false,
+    exportDir: {
+      title: "Set predefined Download Folder (under user home-dir)",
+      description: "Destination under user-home dir for exported files (appended to '~/').",
+      type: 'string',
+      default: 'Downloads',
     },
     dateType: {
       title: "Date to Set on File, match 'Create' / 'Update' of Note or use 'Current'",
@@ -27,11 +27,17 @@ module.exports = {
       enum: ['Current', 'Create', 'Update', 'Both'],
       default: 'Current',
     },
-    exportDir: {
-      title: "Set predefined Download Folder (under user home-dir)",
-      description: "Destination under user-home dir for exported files (appended to '~/').",
-      type: 'string',
-      default: 'Downloads',
+    dirStruct: {
+      title: 'Export Files to Folders matching Notebook Hierarchy',
+      description: 'Export files into folders/sub-folders that mirror notebook hierarchy.',
+      type: 'boolean',
+      default: false,
+    },
+    allowOverwrite: {
+      title: 'Allow exported files to overwrite existing files',
+      description: 'Overwrite existing files instead of appending date-time to end of name.',
+      type: 'boolean',
+      default: false,
     },
   },
   activate: () => {

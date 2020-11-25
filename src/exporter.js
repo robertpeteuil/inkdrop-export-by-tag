@@ -89,8 +89,9 @@ export async function exportTaggedNotes(htmlMode, tagName) {
       await exportNote(noteList[i], notePath, pConfig);
   }
   
+  const expType = (htmlMode) ? "HTML" : "Markdown"
   const notesP = (i > 1) ? "Notes" : "Note"
-  notify('Info', `Exported ${notesP} with tag:${tagName}`, `${i} ${notesP} exported to ${pConfig.exportPath}`);
+  notify('Info', `Exported ${notesP} with tag:${tagName}`, `${i} ${notesP} exported as ${expType}`);
 
   return `${i} Notes exported to ${pConfig.exportPath}`;
 }
@@ -162,8 +163,8 @@ async function writeToFile(fileTitle, fileExt, fileDir, fileBody, pConfig, note)
   var fileName = `${fileTitle}.${fileExt}`;
   var filePath = path.join(fileDir, fileName);
 
-  // flag "wx" = write without overwrite, "w" write okay to overwrite
-  fs.writeFile(filePath, fileBody, { flag: "wx" }, function(err) {
+  const wFlag = (pConfig.allowOverwrite) ? "w" : "wx"
+  fs.writeFile(filePath, fileBody, { flag: wFlag }, function(err) {
     if (err) {
       // Error File already exists
       // datestr includes ms, dateSh is shorter without ms
