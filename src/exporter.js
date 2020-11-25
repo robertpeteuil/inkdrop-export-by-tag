@@ -57,7 +57,7 @@ async function getNotes(notes, tagId) {
   return taggedNotes['docs'];
 }
 
-export async function exportTaggedNotes(htmlMode, tagName) {
+export async function exportTaggedNotes(tagName, htmlMode) {
 
   const pConfig = inkdrop.config.get('export-by-tag');
 
@@ -134,11 +134,6 @@ async function exportNote(note, notePath, pConfig) {
       fileExt = "md";
     }
 
-    // SYNC METHOD
-    // const sanitizedTitle = sanitize(note.title, { replacement: '-' });
-    // await writeToFile(sanitizedTitle, fileExt, fileDir, fileBody, pConfig, note);
-
-    // ORIGINAL METHOD OF WRITING FILE``
     const sanitizedTitle = sanitize(note.title, { replacement: '-' });
     var fileName = `${sanitizedTitle}.${fileExt}`;
     var filePath = path.join(fileDir, fileName);
@@ -159,7 +154,7 @@ async function exportNote(note, notePath, pConfig) {
         notify('Error', 'Error writing file', err.message, true);
       }
     }
-    // SET OPTIONAL CREATE AND MODIFY DATE ON FILE
+
     if (pConfig.dateType == "Note Create") {
       touch.sync(filePath, { time: new Date(note.createdAt) });
     } else if (pConfig.dateType == "Note Modify") {
@@ -170,33 +165,6 @@ async function exportNote(note, notePath, pConfig) {
     }
   }
 }
-
-// async function writeToFile(fileTitle, fileExt, fileDir, fileBody, pConfig, note) {
-//   var fileName = `${fileTitle}.${fileExt}`;
-//   var filePath = path.join(fileDir, fileName);
-
-//   const wFlag = (pConfig.allowOverwrite) ? "w" : "wx"
-//   fs.writeFile(filePath, fileBody, { flag: wFlag }, function(err) {
-//     if (err) {
-//       const dateSh = new Date().toISOString()
-//                                .replace(/-|:/g, '')
-//                                .replace(/T/, '-')
-//                                .substr(0, 15)
-//       fileTitle = fileTitle + '-' + dateSh;
-//       writeToFile(fileTitle, fileExt, fileDir, fileBody, pConfig, note);
-//     }
-//     else {
-//       if (pConfig.dateType == "Create") {
-//         touch.sync(filePath, { time: new Date(note.createdAt) });
-//       } else if (pConfig.dateType == "Update") {
-//         touch.sync(filePath, { time: new Date(note.updatedAt) });
-//       } else if (pConfig.dateType == "Matched") {
-//         fs.utimesSync(filePath, new Date(note.updatedAt), new Date(note.createdAt));
-//         touch.sync(filePath, { time: new Date(note.updatedAt) });
-//       }
-//     }
-//   });
-// }
 
 async function addTitleToMarkdown(md, title) {
   const match = md.match(/^---\n.*?---/ms);

@@ -4,9 +4,9 @@ import { exportTaggedNotes } from './exporter';
 
 let commandListener = null;
 
-async function doExportContext(htmlMode, e) {
+async function doExportContext(e, htmlMode) {
   const tagName = e.target.innerText
-  const result = await exportTaggedNotes(htmlMode, tagName);
+  const result = await exportTaggedNotes(tagName, htmlMode);
   if (result) {
     console.log(result);
   }
@@ -42,8 +42,8 @@ module.exports = {
   },
   activate: () => {
     commandListener = inkdrop.commands.add(document.body, {
-      'export-by-tag:context': (e) => doExportContext(false, e),
-      'export-by-tag:contextHtml': (e) => doExportContext(true, e),
+      'export-by-tag:context': (e) => doExportContext(e, false),
+      'export-by-tag:contextHtml': (e) => doExportContext(e, true),
     });
   },
   deactivate: () => {
