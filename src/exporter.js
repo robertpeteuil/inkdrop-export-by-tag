@@ -114,14 +114,14 @@ async function exportNote(note, notePath, pConfig) {
     const fileDir = path.join(pConfig.exportPath, notePath);
     await checkDir(fileDir);
 
-    var fileExt;
     var fileBody;
+    var fileExt;
 
     if (pConfig.htmlMode) {
-      const tempBody = '# ' + note.title + '\n\n' + note.body;
-      const rawBody = await renderHTML(tempBody);
-      fileBody = await replaceHTMLImagesWithDataURI(rawBody);
-      fileExt = "html"
+      let body = '# ' + note.title + '\n\n' + note.body;
+      body = await renderHTML(body);
+      fileBody = await replaceHTMLImagesWithDataURI(body);
+      fileExt = "html";
     } else {
       let body = note.body
       const uris = body.match(/inkdrop:\/\/file:[^) "']*/g) || []
@@ -130,15 +130,14 @@ async function exportNote(note, notePath, pConfig) {
         await checkDir(picDir);
         body = await replaceImages(body, picDir, fileDir)
       }
-      fileBody = '# ' + note.title + '\n\n' + body;
-      fileExt = "md"
+      fileBody = await addTitleToMarkdown(body, note.title);
+      fileExt = "md";
     }
 
-    // NEW METHOD
     const sanitizedTitle = sanitize(note.title, { replacement: '-' });
     await writeToFile(sanitizedTitle, fileExt, fileDir, fileBody, pConfig, note);
 
-    // ORIGINAL METHOD OF WRITING FILE
+    // ORIGINAL METHOD OF WRITING FILE``
     // const sanitizedTitle = sanitize(note.title, { replacement: '-' });
     // var fileName = `${sanitizedTitle}.${fileExt}`;
     // var filePath = path.join(fileDir, fileName);
@@ -166,16 +165,14 @@ async function writeToFile(fileTitle, fileExt, fileDir, fileBody, pConfig, note)
   const wFlag = (pConfig.allowOverwrite) ? "w" : "wx"
   fs.writeFile(filePath, fileBody, { flag: wFlag }, function(err) {
     if (err) {
-      // Error File already exists
-      // datestr includes ms, dateSh is shorter without ms
-      // const datestr = new Date().toISOString().replace(/-/g, '').replace('.', '').replace(/:/g, '').replace('T','-').replace('Z','')
-      // const dateSh = new Date().toISOString().replace(/(-|:)/g, '').replace(/T/, '-').replace(/\..+/, '')
-      const dateSh = new Date().toISOString().replace(/-|:/g, '').replace(/T/, '-').substr(0, 15)
+      const dateSh = new Date().toISOString()
+                               .replace(/-|:/g, '')
+                               .replace(/T/, '-')
+                               .substr(0, 15)
       fileTitle = fileTitle + '-' + dateSh;
       writeToFile(fileTitle, fileExt, fileDir, fileBody, pConfig, note);
     }
     else {
-      // File Successfully Written
       if (pConfig.dateType == "Create") {
         touch.sync(filePath, { time: new Date(note.createdAt) });
       } else if (pConfig.dateType == "Update") {
@@ -186,6 +183,17 @@ async function writeToFile(fileTitle, fileExt, fileDir, fileBody, pConfig, note)
       }
     }
   });
+}
+
+async function addTitleToMarkdown(md, title) {
+  const match = md.match(/^---\n.*?---/ms);
+
+  if (match instanceof Array && match.length > 0 && match.index === 0) {
+    const frontmatter = match[0];
+    return `${frontmatter}\n# ${title}\n${md.substr(frontmatter.length)}`;
+  } else {
+    return `# ${title}\n\n${md}`;
+  }
 }
 
 async function checkDir(dirName) {
