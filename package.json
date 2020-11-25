@@ -1,7 +1,7 @@
 {
   "name": "export-by-tag",
-  "version": "0.1.0",
-  "description": "Export Inkdrop Notes by Tag",
+  "version": "0.0.0",
+  "description": "Export Inkdrop notes by Tag",
   "repository": "https://github.com/robertpeteuil/inkdrop-export-by-tag",
   "license": "MIT",
   "main": "./src/index",

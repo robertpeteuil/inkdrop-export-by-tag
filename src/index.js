@@ -15,27 +15,27 @@ async function doExportContext(htmlMode, e) {
 module.exports = {
   config: {
     exportDir: {
-      title: "Set predefined Download Folder (under user home-dir)",
-      description: "Destination under user-home dir for exported files (appended to '~/').",
+      title: "Set predefined Download Folder (within user homedir)",
+      description: "Destination within user-home for exported files",
       type: 'string',
-      default: 'Downloads',
+      default: 'Downloads/inkdrop',
     },
     dateType: {
-      title: "Date to Set on File, match 'Create' / 'Update' of Note or use 'Current'",
-      description: "Date to set on exported file, current or match update/create of Note.", 
+      title: "Set Exported Files Create / Modify Timestamps",
+      description: "Set exported file timestamps to Current Time, Note Creation Time, Note Modify Time or Separate Values (file create = note create, file modify = note modify)", 
       type: 'string',
-      enum: ['Current', 'Create', 'Update', 'Both'],
-      default: 'Current',
+      enum: ['Current Time', 'Note Create', 'Note Modify', 'Separate Values'],
+      default: 'Current Time',
     },
     dirStruct: {
-      title: 'Export Files to Folders matching Notebook Hierarchy',
-      description: 'Export files into folders/sub-folders that mirror notebook hierarchy.',
+      title: 'Export Files to Directory Structure that matches Notebook Hierarchy',
+      description: 'Export files into folders (created as necessary) to mirror notebooks',
       type: 'boolean',
       default: false,
     },
     allowOverwrite: {
-      title: 'Allow Overwrite of Existing Files by Exported Files',
-      description: 'Disable overwrite protection and allow files to replaced during export.',
+      title: 'Allow Exported Files to Overwrite Existing Files',
+      description: 'Disable overwrite protection and allow file replacement during export',
       type: 'boolean',
       default: false,
     },
