@@ -15,13 +15,13 @@ async function doExportContext(e, htmlMode) {
 module.exports = {
   config: {
     exportDir: {
-      title: "Set predefined Download Folder (within user homedir)",
+      title: "Set Download Folder (within home-dir)",
       description: "Destination within user-home for exported files",
       type: 'string',
-      default: 'Downloads/inkdrop',
+      default: '',
     },
     dateType: {
-      title: "Set Exported Files Create / Modify Timestamps",
+      title: "Set Exported Files Create and Modify Timestamps",
       description: "Set exported file timestamps to Current Time, Note Creation Time, Note Modify Time or Separate Values (file create = note create, file modify = note modify)", 
       type: 'string',
       enum: ['Current Time', 'Note Create', 'Note Modify', 'Separate Values'],
