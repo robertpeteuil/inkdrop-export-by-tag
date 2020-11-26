@@ -32,8 +32,8 @@ The configuration options for this plugin are listed below, and are all optional
 
 ### Set Exported Files Create and Modify Timestamps
 
-- Enables controlling timestamps of exported files, defaults to `Current TIme`.
-  - By default exported files are timestamped with the current time/date.
+- Enables controlling timestamps of exported files, defaults to `Current Time`.
+  - By default exported files are timestamped with the current date/time.
 - There are options to set these to the metadata values from the corresponding note.
   - `Note Create` sets both File Create and Modified to the time the Note was created.
     - Useful when using file-system sort functions to sort dated meeting notes.
@@ -44,8 +44,9 @@ The configuration options for this plugin are listed below, and are all optional
 ### Export Files to Directory Structure that matches Notebook Hierarchy
 
 - Re-creates the notebook hierarchy for exported notes using folders, off by default.
-  - Folders are created in the download folder (whether set via dialog or config)
-- This allows preserving organization of notes, as a tagged export, more than other types of export, may exports notes from many different notebooks and sub-notebooks.
+  - Folders are created in the download folder (whether set by dialog or config)
+- This option allows preserving the original organization of the notes.
+  - This may be desired because exporting notes by tag will often export notes located in many different notebooks and sub-notebooks.
 
 ### Allow Exported Files to Overwrite Existing Files
 
