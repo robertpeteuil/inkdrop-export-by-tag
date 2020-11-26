@@ -1,6 +1,6 @@
-# Inkdrop Plugin - Export notes by tag as Markdown or HTML files
+# Export Inkdrop notes by tag as Markdown or HTML files
 
-This plugin allows exporting notes with a specified tag by right-clicking on a Tag, chose Markdown or HTML export from the pop-up menu and selecting a download destination.
+This Inkdrop plugin allows exporting notes with a specified tag by right-clicking on a Tag, chose Markdown or HTML export from the pop-up menu and selecting a download destination.
 
 Configuration options allow pre-defining an export location, enabling file overwrite, configuring file timestamps, and customizing the export directory structure.
 
