@@ -4,7 +4,7 @@ This [Inkdrop](https://www.inkdrop.app/) plugin allows exporting all notes with 
 
 ![Example](https://user-images.githubusercontent.com/1554603/100481781-7af32880-30b2-11eb-9127-a272b733fd67.png)
 
-Configuration options allow pre-defining an export location, setting file overwrite mode, configure the timestamps placed on exported files, and customizing the export directory structure.
+Configuration options allow pre-defining an export location, setting file overwrite mode, configuring the timestamps placed on exported files, and customizing the export directory structure.
 
 ## Install
 
