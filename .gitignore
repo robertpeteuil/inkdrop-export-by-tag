@@ -2,7 +2,6 @@
 # Edit at https://www.gitignore.io/?templates=node
 
 *.bak*
-yarn.lock
 
 ### Node ###
 # Logs
