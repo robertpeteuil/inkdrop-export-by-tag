@@ -3,33 +3,33 @@
     ".sidebar-menu .sidebar-menu-tag-list-item": [
         {"type": "separator"},
         {
-        "label": "Export notes with tag as Markdown",
+        "label": "Export Notes with Tag as Markdown",
         "command": "export-by-tag:context"
         },
         {
-        "label": "Export notes with tag as HTML",
+        "label": "Export Notes with Tag as HTML",
         "command": "export-by-tag:contextHtml"
         }
     ],
     ".note-list-bar-item .note-list-item-view .tag-label": [
         {"type": "separator"},
         {
-        "label": "Export notes with tag as Markdown",
+        "label": "Export Notes with Tag as Markdown",
         "command": "export-by-tag:context"
         },
         {
-        "label": "Export notes with tag as HTML",
+        "label": "Export Notes with Tag as HTML",
         "command": "export-by-tag:contextHtml"
         }
     ],
     ".note-tags-bar .note-tags-bar-item": [
         {"type": "separator"},
         {
-        "label": "Export notes with tag as Markdown",
+        "label": "Export Notes with Tag as Markdown",
         "command": "export-by-tag:context"
         },
         {
-        "label": "Export notes with tag as HTML",
+        "label": "Export Notes with Tag as HTML",
         "command": "export-by-tag:contextHtml"
         }
     ]
