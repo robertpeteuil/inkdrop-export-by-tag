@@ -51,21 +51,21 @@ async function getNotes(notes, tagId) {
   } catch (err) {
     notify('Error', 'Error getting notes', err.message, true);
   }
-  if (taggedNotes['docs'].length == 0) {
-    notify('Warning', 'No Notes Exported', 'Tag not on any notes', true);
-  }
   return taggedNotes['docs'];
 }
 
 export async function exportTaggedNotes(tagName, htmlMode) {
 
   const pConfig = inkdrop.config.get('export-by-tag');
-
   pConfig.htmlMode = htmlMode
 
   const db = await inkdrop.main.dataStore.getLocalDB();
   const tagId = await getTag(db.tags, tagName);
   var noteList = await getNotes(db.notes, tagId);
+
+  if (noteList.length === 0) {
+    notify('Warning', 'No Notes Exported', `Tag: ${tagName} not on any notes`, true);
+  }
 
   if (pConfig.exportDir) {
     pConfig.exportPath = path.join(os.homedir(), pConfig.exportDir);
