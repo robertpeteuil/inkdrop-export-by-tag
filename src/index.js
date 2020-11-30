@@ -39,6 +39,12 @@ module.exports = {
       type: 'boolean',
       default: false,
     },
+    ignoreBooks: {
+      title: 'Notebooks to Ignore',
+      description: 'Name of Notebooks to ignore while searching for Notes (Comma seperated list).',
+      type: 'string',
+      default: '',
+    },
   },
   activate: () => {
     commandListener = inkdrop.commands.add(document.body, {
