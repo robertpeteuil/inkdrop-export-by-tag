@@ -38,28 +38,27 @@ async function getTag(tags, tagName) {
   }
 }
 
-async function getFilteredNotes(db, tagId, ignoreBooks) {
+async function getFilteredNotes(db, tagId, skipBooks) {
   var noteList = await getNotes(db.notes, tagId);
   if (noteList.length === 0) {
     return [];
   }
   
   // TODO: sub-notebook ids? allows less granularity, or expected behavior?
-  const ignoreNames = ignoreBooks.replace(/,\s+/g, ',').split(',')
-  // const ignoreNames = ignoreBooks.split(',')
-  var ignoreIds = [];
-  for (var i = 0; i < ignoreNames.length; i++) {
+  const skipNames = skipBooks.replace(/,\s+/g, ',').split(',')
+  var skipIds = [];
+  for (var i = 0; i < skipNames.length; i++) {
     try {
-      var { _id } = await db.books.findWithName(ignoreNames[i]);
-      console.log(`book: ${ignoreNames[i]},  id: ${_id}`);
-      ignoreIds.push(_id);
+      var { _id } = await db.books.findWithName(skipNames[i]);
+      console.log(`book: ${skipNames[i]},  id: ${_id}`);
+      skipIds.push(_id);
     } catch {
-      notify('Warning', `Unable to ignore book: ${ignoreNames[i]}`, 'Set in config but not found.');
+      notify('Warning', `Unable to skip book: ${skipNames[i]}`, "Book listed in config, but doesn't exist.");
     }
   }
-  console.log(`ignored book ids: ${ignoreIds}`);
+  console.log(`skipped book ids: ${skipIds}`);
 
-  const filteredNotes = noteList.filter(note => !ignoreIds.includes(note.bookId))
+  const filteredNotes = noteList.filter(note => !skipIds.includes(note.bookId))
   return filteredNotes
 }
 
@@ -70,14 +69,12 @@ async function getNotes(notes, tagId) {
     limit: 500
   };
 
-  // TODO: switch to destructured assignment
-  var taggedNotes = {}
   try {
-    taggedNotes = await notes.findWithTag(tagId, queryOptions);
+    var { docs } = await notes.findWithTag(tagId, queryOptions);
+    return docs;
   } catch (err) {
     notify('Error', 'Error getting notes', err.message, true);
   }
-  return taggedNotes['docs'];
 }
 
 export async function exportTaggedNotes(tagName, htmlMode) {
@@ -87,13 +84,13 @@ export async function exportTaggedNotes(tagName, htmlMode) {
 
   const db = await inkdrop.main.dataStore.getLocalDB();
   const tagId = await getTag(db.tags, tagName);
-  const noteList = pConfig.ignoreBooks ?
-            await getFilteredNotes(db, tagId, pConfig.ignoreBooks) :
+  const noteList = pConfig.skipBooks ?
+            await getFilteredNotes(db, tagId, pConfig.skipBooks) :
             await getNotes(db.notes, tagId);
 
   console.log(`noteList length: ${noteList.length}`);
 
-  // TODO: fix messages when tag on skipped notes
+  // TODO: fix messages when tag was on skipped notes
   if (noteList.length === 0) {
     notify('Warning', 'No Notes Exported', `Tag: ${tagName} not on any notes`, true);
   }
@@ -122,7 +119,7 @@ export async function exportTaggedNotes(tagName, htmlMode) {
   
   const expType = (htmlMode) ? "HTML" : "Markdown"
   const notesP = (i > 1) ? "Notes" : "Note"
-  notify('Info', `Exported ${notesP} with tag: ${tagName}`, `${i} ${notesP} exported in ${expType} format`);
+  notify('Info', `Exported ${i} ${notesP} with tag: ${tagName}`, `${notesP} exported in ${expType} format`);
 
   return `${i} Notes exported to ${pConfig.exportPath}`;
 }

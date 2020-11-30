@@ -39,9 +39,9 @@ module.exports = {
       type: 'boolean',
       default: false,
     },
-    ignoreBooks: {
-      title: 'Notebooks to Ignore',
-      description: 'Name of Notebooks to ignore while searching for Notes (Comma seperated list).',
+    skipBooks: {
+      title: 'Notebooks to Skip',
+      description: 'Name of Notebooks to skip when searching for tagged notes (comma separated list).',
       type: 'string',
       default: '',
     },
