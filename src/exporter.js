@@ -38,6 +38,49 @@ async function getTag(tags, tagName) {
   }
 }
 
+// temp discrete function to make array of ignored folder IDs
+async function getIgnoreList(db, ignoreBooks) {
+  const ignoreNames = ignoreBooks.replace(/\s+/g, '').split(',')
+  var ignoreIds = [];
+  for (var i = 0; i < ignoreNames.length; i++) {
+    var { _id } = await db.books.findWithName(ignoreNames[i]);
+    console.log(`book: ${ignoreNames[i]},  id: ${_id}`);
+    ignoreIds.push(_id);
+  }
+  return ignoreIds;
+}
+
+// discrete function to get bookId by name
+async function getIgnoreBookId(books, ignoreBook) {
+  try {
+    const bookMeta = await books.findWithName(ignoreBook);
+    return bookMeta._id;
+  } catch (err) {
+    notify('Warning', `Warning: Not ignoring book '${ignoreBook}'`, 'Set in config but not found.');
+    return '';
+  }
+}
+async function getFilteredNotes(db, tagId, ignoreBooks) {
+  var noteList = await getNotes(db.notes, tagId);
+  if (noteList.length === 0) {
+    return []
+  }
+  
+  const ignoreNames = ignoreBooks.replace(/\s+/g, '').split(',')
+  var ignoreIds = [];
+  for (var i = 0; i < ignoreNames.length; i++) {
+    // consider calling separate function for error handling
+    var { _id } = await db.books.findWithName(ignoreNames[i]);
+    console.log(`book: ${ignoreNames[i]},  id: ${_id}`);
+    ignoreIds.push(_id);
+  }
+  console.log(`ignored book ids: ${ignoreIds}`);
+
+  const filteredNotes = noteList.filter(note => !ignoreIds.includes(note.bookId))
+  console.log(`filtered books: ${filteredNotes.length}`);
+  return filteredNotes
+}
+
 async function getNotes(notes, tagId) {
   const queryOptions = {
     sort: [{ title: 'desc' }],
@@ -61,7 +104,18 @@ export async function exportTaggedNotes(tagName, htmlMode) {
 
   const db = await inkdrop.main.dataStore.getLocalDB();
   const tagId = await getTag(db.tags, tagName);
-  var noteList = await getNotes(db.notes, tagId);
+  const noteList = pConfig.ignoreBooks ?
+            await getFilteredNotes(db, tagId, pConfig.ignoreBooks) :
+            await getNotes(db.notes, tagId);
+  
+  // temp implementation - separate functions
+  // var noteList = await getNotes(db.notes, tagId);
+  // const ignoreIds = pConfig.ignoreBooks ? 
+  //             await getIgnoreList(db, pConfig.ignoreBooks) : [];
+  // console.log(`ignored book ids: ${ignoreIds}`);
+  // noteList = ignoreIds ? noteList.filter(note => !ignoreIds.includes(note.bookId)) : noteList;
+
+  console.log(`noteList length: ${noteList.length}`);
 
   if (noteList.length === 0) {
     notify('Warning', 'No Notes Exported', `Tag: ${tagName} not on any notes`, true);
@@ -91,7 +145,7 @@ export async function exportTaggedNotes(tagName, htmlMode) {
   
   const expType = (htmlMode) ? "HTML" : "Markdown"
   const notesP = (i > 1) ? "Notes" : "Note"
-  notify('Info', `Exported ${notesP} with tag:${tagName}`, `${i} ${notesP} exported as ${expType}`);
+  notify('Info', `Exported ${notesP} with tag: ${tagName}`, `${i} ${notesP} exported as ${expType}`);
 
   return `${i} Notes exported to ${pConfig.exportPath}`;
 }
