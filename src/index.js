@@ -40,10 +40,16 @@ module.exports = {
       default: false,
     },
     skipBooks: {
-      title: 'Notebooks to Skip',
-      description: 'Name of Notebooks to skip when searching for tagged notes (comma separated list).',
+      title: 'Skip Notebooks (sub-notebooks are not skipped unless listed separately)',
+      description: 'Name of Notebooks to skip when searching for tagged notes (comma separated list)',
       type: 'string',
       default: '',
+    },
+    skipBookErrors: {
+      title: 'Suppress Warnings if a Skip Notebook not found',
+      description: "Disable warning messages if Notebook listed in 'Skip Notebooks' not found",
+      type: 'boolean',
+      default: false,
     },
   },
   activate: () => {

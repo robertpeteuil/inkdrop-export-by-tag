@@ -38,22 +38,24 @@ async function getTag(tags, tagName) {
   }
 }
 
-async function getFilteredNotes(db, tagId, skipBooks) {
+async function getFilteredNotes(db, tagId, pConfig) {
   var {noteList, unused} = await getNotes(db.notes, tagId);
   if (noteList.length === 0) {
     return {noteList: [], skipped: 0};
   }
   
-  // TODO: sub-notebook ids? allows less granularity, or expected behavior?
-  const skipNames = skipBooks.replace(/,\s+/g, ',').split(',')
+  const skipNames = pConfig.skipBooks.replace(/,\s+/g, ',').split(',')
   var skipIds = [];
   for (var i = 0; i < skipNames.length; i++) {
     try {
       var { _id } = await db.books.findWithName(skipNames[i]);
-      // console.log(`book: ${skipNames[i]},  id: ${_id}`);
       skipIds.push(_id);
     } catch {
-      notify('Warning', `Unable to skip book: ${skipNames[i]}`, "Book listed in config, but doesn't exist.");
+      if (!pConfig.skipBookErrors) {
+        notify('Warning', `Unable to skip book: ${skipNames[i]}`, "Book listed in config, but doesn't exist.");
+      } else {
+        console.log(`Supressed error - Notebook: ${skipNames[i]} set in config not found`);
+      }
     }
   }
   console.log(`skipped book ids: ${skipIds}`);
@@ -86,7 +88,7 @@ export async function exportTaggedNotes(tagName, htmlMode) {
   const db = await inkdrop.main.dataStore.getLocalDB();
   const tagId = await getTag(db.tags, tagName);
   const {noteList, skipped} = pConfig.skipBooks ?
-            await getFilteredNotes(db, tagId, pConfig.skipBooks) :
+            await getFilteredNotes(db, tagId, pConfig) :
             await getNotes(db.notes, tagId);
 
   if (noteList.length === 0 && skipped === 0) {
