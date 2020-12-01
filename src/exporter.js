@@ -39,9 +39,9 @@ async function getTag(tags, tagName) {
 }
 
 async function getFilteredNotes(db, tagId, skipBooks) {
-  var noteList = await getNotes(db.notes, tagId);
+  var {noteList, unused} = await getNotes(db.notes, tagId);
   if (noteList.length === 0) {
-    return [];
+    return {noteList: [], skipped: 0};
   }
   
   // TODO: sub-notebook ids? allows less granularity, or expected behavior?
@@ -50,7 +50,7 @@ async function getFilteredNotes(db, tagId, skipBooks) {
   for (var i = 0; i < skipNames.length; i++) {
     try {
       var { _id } = await db.books.findWithName(skipNames[i]);
-      console.log(`book: ${skipNames[i]},  id: ${_id}`);
+      // console.log(`book: ${skipNames[i]},  id: ${_id}`);
       skipIds.push(_id);
     } catch {
       notify('Warning', `Unable to skip book: ${skipNames[i]}`, "Book listed in config, but doesn't exist.");
@@ -59,7 +59,8 @@ async function getFilteredNotes(db, tagId, skipBooks) {
   console.log(`skipped book ids: ${skipIds}`);
 
   const filteredNotes = noteList.filter(note => !skipIds.includes(note.bookId))
-  return filteredNotes
+  const skipNotes = noteList.length - filteredNotes.length
+  return {noteList: filteredNotes, skipped: skipNotes}
 }
 
 async function getNotes(notes, tagId) {
@@ -71,7 +72,7 @@ async function getNotes(notes, tagId) {
 
   try {
     var { docs } = await notes.findWithTag(tagId, queryOptions);
-    return docs;
+    return {noteList: docs, skipped: 0};
   } catch (err) {
     notify('Error', 'Error getting notes', err.message, true);
   }
@@ -84,15 +85,14 @@ export async function exportTaggedNotes(tagName, htmlMode) {
 
   const db = await inkdrop.main.dataStore.getLocalDB();
   const tagId = await getTag(db.tags, tagName);
-  const noteList = pConfig.skipBooks ?
+  const {noteList, skipped} = pConfig.skipBooks ?
             await getFilteredNotes(db, tagId, pConfig.skipBooks) :
             await getNotes(db.notes, tagId);
 
-  console.log(`noteList length: ${noteList.length}`);
-
-  // TODO: fix messages when tag was on skipped notes
-  if (noteList.length === 0) {
-    notify('Warning', 'No Notes Exported', `Tag: ${tagName} not on any notes`, true);
+  if (noteList.length === 0 && skipped === 0) {
+    notify('Warning', 'Zero Notes Exported', `Tag: ${tagName} not on any notes`, true);
+  } else if (noteList.length === 0) {
+    notify('Warning', 'Zero Notes Exported', `${skipped} ${noteWord(skipped)} with Tag: ${tagName} skipped`, true);
   }
 
   if (pConfig.exportDir) {
@@ -118,10 +118,16 @@ export async function exportTaggedNotes(tagName, htmlMode) {
   }
   
   const expType = (htmlMode) ? "HTML" : "Markdown"
-  const notesP = (i > 1) ? "Notes" : "Note"
-  notify('Info', `Exported ${i} ${notesP} with tag: ${tagName}`, `${notesP} exported in ${expType} format`);
+  // const notesP = (i > 1) ? "Notes" : "Note"
+  notify('Info', `Exported ${i} ${noteWord(i)} with tag: ${tagName}`, `${noteWord(i)} exported in ${expType} format`);
 
-  return `${i} Notes exported to ${pConfig.exportPath}`;
+  console.log(`exported notes: ${noteList.length}, skipped notes: ${skipped}`);
+
+  return `${i} ${noteWord(i)} exported in ${expType} format to ${pConfig.exportPath}`;
+}
+
+function noteWord(checkVal){
+  return checkVal > 1 ? "Notes" : "Note"
 }
 
 async function createBookArray(bookId, bookObj, bookArray) {
