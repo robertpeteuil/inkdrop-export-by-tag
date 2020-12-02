@@ -51,10 +51,10 @@ async function getFilteredNotes(db, tagId, pConfig) {
       var { _id } = await db.books.findWithName(skipNames[i]);
       skipIds.push(_id);
     } catch {
-      if (!pConfig.skipBookErrors) {
-        notify('Warning', `Unable to skip book: ${skipNames[i]}`, "Book listed in config, but doesn't exist.");
+      if (!pConfig.ignoreBookErrors) {
+        notify('Warning', `Unable to skip book: ${skipNames[i]}`, "Not found but listed in config");
       } else {
-        console.log(`Supressed error - Notebook: ${skipNames[i]} set in config not found`);
+        console.log(`Notebook: ${skipNames[i]} not found, yet listed in skipBooks config entry`);
       }
     }
   }
@@ -120,7 +120,6 @@ export async function exportTaggedNotes(tagName, htmlMode) {
   }
   
   const expType = (htmlMode) ? "HTML" : "Markdown"
-  // const notesP = (i > 1) ? "Notes" : "Note"
   notify('Info', `Exported ${i} ${noteWord(i)} with tag: ${tagName}`, `${noteWord(i)} exported in ${expType} format`);
 
   console.log(`exported notes: ${noteList.length}, skipped notes: ${skipped}`);
@@ -129,7 +128,7 @@ export async function exportTaggedNotes(tagName, htmlMode) {
 }
 
 function noteWord(checkVal){
-  return checkVal > 1 ? "Notes" : "Note"
+  return checkVal > 1 ? "notes" : "note"
 }
 
 async function createBookArray(bookId, bookObj, bookArray) {

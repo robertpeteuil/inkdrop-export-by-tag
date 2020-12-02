@@ -45,7 +45,7 @@ module.exports = {
       type: 'string',
       default: '',
     },
-    skipBookErrors: {
+    ignoreBookErrors: {
       title: 'Suppress Warnings if a Skip Notebook not found',
       description: "Disable warning messages if Notebook listed in 'Skip Notebooks' not found",
       type: 'boolean',
