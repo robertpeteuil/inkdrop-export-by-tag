@@ -7,10 +7,10 @@ abbrev@1:
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
 
-inkdrop-export-utils@^3.2.2:
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/inkdrop-export-utils/-/inkdrop-export-utils-3.2.2.tgz#a5aaa9ec69356163c7dfa4b7ed8bd5e49cd51eb1"
-  integrity sha512-aHvBHsTAbJoaU5OCiUBPSafM+x1FKmZaRmmWxq9GdW+ZmYiMivmjNzoyAZmSWcoLTaZWqFn179ULr++Mp5R0jg==
+inkdrop-export-utils@^3.2.4:
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/inkdrop-export-utils/-/inkdrop-export-utils-3.2.5.tgz#a3a29087cbc86e6a5664302570a9b1e8debaafde"
+  integrity sha512-pomx5574e6bgUf1DwilJt34dN92oLVQ5h4SaLnJK4J6ID6R5IcgzyrWRWHGOm6LtA8b79zr/PG/fkupZ5BJbIw==
   dependencies:
     inkdrop-model "^2.5.0"
 
