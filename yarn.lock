@@ -7,7 +7,7 @@ abbrev@1:
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
 
-inkdrop-export-utils@^3.2.4:
+inkdrop-export-utils@^3.2.5:
   version "3.2.5"
   resolved "https://registry.yarnpkg.com/inkdrop-export-utils/-/inkdrop-export-utils-3.2.5.tgz#a3a29087cbc86e6a5664302570a9b1e8debaafde"
   integrity sha512-pomx5574e6bgUf1DwilJt34dN92oLVQ5h4SaLnJK4J6ID6R5IcgzyrWRWHGOm6LtA8b79zr/PG/fkupZ5BJbIw==
