@@ -31,10 +31,10 @@ function notify(level, message, details, critialErr) {
 
 async function getTag(tags, tagName) {
   try {
-    const tagMeta = await tags.findWithName(tagName);
-    return tagMeta._id;
+    const { _id } = await tags.findWithName(tagName);
+    return _id;
   } catch (err) {
-    notify('Error', 'Export Failed', `Cannot find Tag '${tagName}'`, true);
+    notify('Error', 'Export Failed', `Cannot find Tag ${tagName}`, true);
   }
 }
 
@@ -45,13 +45,12 @@ async function getNotes(notes, tagId) {
     limit: 500
   };
 
-  var taggedNotes = {}
   try {
-    taggedNotes = await notes.findWithTag(tagId, queryOptions);
+    const { docs } = await notes.findWithTag(tagId, queryOptions);
+    return docs;
   } catch (err) {
     notify('Error', 'Error getting notes', err.message, true);
   }
-  return taggedNotes['docs'];
 }
 
 export async function exportTaggedNotes(tagName, htmlMode) {
@@ -90,10 +89,10 @@ export async function exportTaggedNotes(tagName, htmlMode) {
   }
   
   const expType = (htmlMode) ? "HTML" : "Markdown"
-  const notesP = (i > 1) ? "Notes" : "Note"
+  const notesP = (i > 1) ? "notes" : "note"
   notify('Info', `Exported ${notesP} with tag:${tagName}`, `${i} ${notesP} exported as ${expType}`);
 
-  return `${i} Notes exported to ${pConfig.exportPath}`;
+  return `${i} notes exported to ${pConfig.exportPath}`;
 }
 
 async function createBookArray(bookId, bookObj, bookArray) {
