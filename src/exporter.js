@@ -10,7 +10,8 @@ const { dialog } = remote
 import {
   renderHTML,
   replaceImages,
-  replaceHTMLImagesWithDataURI
+  replaceHTMLImagesWithDataURI,
+  addTitleToMarkdown
 } from 'inkdrop-export-utils'
 
 
@@ -31,8 +32,8 @@ function notify(level, message, details, critialErr) {
 
 async function getTag(tags, tagName) {
   try {
-    const tagMeta = await tags.findWithName(tagName);
-    return tagMeta._id;
+    const { _id } = await tags.findWithName(tagName);
+    return _id;
   } catch (err) {
     notify('Error', 'Export Failed', `Cannot find Tag: ${tagName}`, true);
   }
@@ -198,18 +199,6 @@ async function exportNote(note, notePath, pConfig) {
       fs.utimesSync(filePath, new Date(note.updatedAt), new Date(note.createdAt));
       touch.sync(filePath, { time: new Date(note.updatedAt) });
     }
-  }
-}
-
-async function addTitleToMarkdown(md, title) {
-  const match = md.match(/^---\n.*?---/ms);
-
-  if (match instanceof Array && match.length > 0 && match.index === 0) {
-    const frontmatter = match[0];
-    return `${frontmatter}\n# ${title}\n${md.substr(frontmatter.length)}`;
-  } else {
-    let body = (md.match(/^.*$/m)[0].length === 0) ? `\n${md}` : `\n\n${md}`
-    return `# ${title}${body}`;
   }
 }
 
